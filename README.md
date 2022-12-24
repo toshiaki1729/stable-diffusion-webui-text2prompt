@@ -39,9 +39,9 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
  ### More detailed
  $i \in N = \\{1, 2, ..., n\\}$ for index number of the tag  
  cosine similarity between tag description $d_i$ and your text $t$ : $S_C(d_i, t) = s_i$  
- probablity for the tag to be chosen : $P_i$
+ probability for the tag to be chosen : $P_i$
 
- ### "Method to convert similarity into probablity"
+ ### "Method to convert similarity into probability"
  #### "Cutoff and Power"
  
  $$p_i = \text{clamp}(s_i, 0, 1)^{\text{Power}} = \text{max}(s_i, 0)^{\text{Power}}$$
@@ -65,8 +65,8 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
  $$
 
  #### "Top-p (Nucleus)"
- - $N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
-   - set $N_p=\emptyset$ at first, and add index of $p_k$ into $N_p$ where $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$ for $k = 1, 2, ..., N$, while the equation holds.
+ - $Find smallest N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
+   - set $N_p=\emptyset$ at first, and add index of $p_k$ into $N_p$ where $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$ for $k = 1, 2, ..., N$, until the equation holds.
             
 $$
 P_i = \begin{cases} 
