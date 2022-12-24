@@ -66,7 +66,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 
  #### "Top-p (Nucleus)"
  - $N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
-   - set $N_p=\emptyset$ at first, and add $k$ into $N_p$ where $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$, while the equation holds.
+   - set $N_p=\emptyset$ at first, and add index of $p_k$ into $N_p$ where $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$, while the equation holds.
             
 $$
 P_i = \begin{cases} 
