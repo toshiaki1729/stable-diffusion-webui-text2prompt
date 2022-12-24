@@ -1,4 +1,4 @@
-# txt2prompt
+# text2prompt
  ![](pic/pic0.png)
 
  This is an extension to make prompt from simple text for [Stable Diffusion web UI by AUTOMATIC1111](https://github.com/AUTOMATIC1111/stable-diffusion-webui).  
