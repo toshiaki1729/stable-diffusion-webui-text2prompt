@@ -28,7 +28,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
  1. Danbooru tags and it's descriptions are in the `data` folder
     - descriptions are generated from wiki and already tokenised
     - [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model is used to tokenize the text
-    - for now, some tags (<1k tagged, containing title of the work) are deleted to prevent from "noisy" result
+    - for now, some tags (such as <1k tagged or containing title of the work) are deleted to prevent from "noisy" result
  1. Tokenize your input text and calculate cosine similarity with all tag descriptions
  1. Choose some tags depending on their similarities
 
