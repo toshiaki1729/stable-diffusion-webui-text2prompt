@@ -33,34 +33,45 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-txt2prompt.git 
  1. Choose some tags depending on their similarities
 
  ![](pic/pic1.png)
+ 
+---
 
  ### More detailed
- $i \in \{1, 2, ..., n\} = N$ for index number of the tag  
+ $i \in \\{1, 2, ..., n\\} = N$ for index number of the tag  
  cosine similarity between tag description $d_i$ and your text $t$ : $S_C(d_i, t) = s_i$  
  probablity for the tag to be chosen : $P_i$
 
-- "Method to convert similarity into probablity"
-    - "Cutoff and Power"
-        - $p_i = \text{clamp}(s_i, 0, 1)^{\text{Power}} = \text{max}(s_i, 0)^{\text{Power}}$
-    - "Softmax"
-        - $p_i = \text{softmax}(s_i)$
+ ### "Method to convert similarity into probablity"
+ #### "Cutoff and Power"
+ - $p_i = \text{clamp}(s_i, 0, 1)^{\text{Power}} = \text{max}(s_i, 0)^{\text{Power}}$
+ #### "Softmax"
+ - $p_i = \text{softmax}(s_i)$
 
-- "Sampling method"
-    - "NONE"
-        - $P_i = p_i$
-    - "Top-k"
-        - $P_i = 
-            \begin{cases} 
-            \frac{p_i}{\Sigma p_j \text{for all top-}k} & \text{if}\ p_i\ \text{is top-}k\ \text{largest in } \{p_n | n \in N\} \\
-            0 & \text{otherwise} \\
-            \end{cases}$
-    - "Top-p (Nucleus)"
-        - $N_p \subset N$ such that $\Sigma_{i \in N_p}p_i 
-        \geq p$
-            - set $N_p=\emptyset$ at first, and add $k$ into $N_p$ such that $p_k$ is the $k$-th largest in $\{p_n | n \in N\}$, while the equation holds.
-        - $P_i = 
-            \begin{cases} 
-            \frac{p_i}{\Sigma_{j \in N_p} p_j} & \text{if}\ i \in N_p \\
-            0 & \text{otherwise} \\
-            \end{cases}$
+ ### "Sampling method"
+ #### "NONE"
+
+ $$P_i = p_i$$
+
+ #### "Top-k"
+
+ $$
+ P_i = \begin{cases} 
+ \frac{p_i}{\Sigma p_j \text{ for all top-}k} & \text{if } p_i \text{ is top-}k \text{ largest in } \\{p_n | n \in N \\} \\
+ 0 & \text{otherwise} \\
+ \end{cases}
+ $$
+
+ #### "Top-p (Nucleus)"
+ - $N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
+   - set $N_p=\emptyset$ at first, and add $k$ into $N_p$ such that $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$, while the equation holds.
+            
+$$
+P_i = \begin{cases} 
+\frac{p_i}{\Sigma p_j \text{ for all }j \in N_p} & \text{if } i \in N_p \\
+0 & \text{otherwise} \\
+\end{cases}
+$$
+        
+        
+
         
