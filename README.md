@@ -37,7 +37,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-txt2prompt.git 
 ---
 
  ### More detailed
- $i \in \\{1, 2, ..., n\\} = N$ for index number of the tag  
+ $i \in N = \\{1, 2, ..., n\\}$ for index number of the tag  
  cosine similarity between tag description $d_i$ and your text $t$ : $S_C(d_i, t) = s_i$  
  probablity for the tag to be chosen : $P_i$
 
@@ -63,7 +63,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-txt2prompt.git 
 
  #### "Top-p (Nucleus)"
  - $N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
-   - set $N_p=\emptyset$ at first, and add $k$ into $N_p$ such that $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$, while the equation holds.
+   - set $N_p=\emptyset$ at first, and add $k$ into $N_p$ where $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$, while the equation holds.
             
 $$
 P_i = \begin{cases} 
@@ -71,7 +71,5 @@ P_i = \begin{cases}
 0 & \text{otherwise} \\
 \end{cases}
 $$
-        
-        
 
-        
+Finally, the tags will be chosen. The number of the tags will be $\leq$ "Max number of tags".
