@@ -43,9 +43,12 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 
  ### "Method to convert similarity into probablity"
  #### "Cutoff and Power"
- - $p_i = \text{clamp}(s_i, 0, 1)^{\text{Power}} = \text{max}(s_i, 0)^{\text{Power}}$
+ 
+ $$p_i = \text{clamp}(s_i, 0, 1)^{\text{Power}} = \text{max}(s_i, 0)^{\text{Power}}$$
+
  #### "Softmax"
- - $p_i = \text{softmax}(s_i)$
+ 
+ $$p_i = \sigma(\\{s_n|n \in N\\})_i = \dfrac{e^{s_i}}{ \Sigma_{j \in N}\ e^{s_j} }$$
 
  ### "Sampling method"
  #### "NONE"
@@ -56,7 +59,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 
  $$
  P_i = \begin{cases} 
- \frac{p_i}{\Sigma p_j \text{ for all top-}k} & \text{if } p_i \text{ is top-}k \text{ largest in } \\{p_n | n \in N \\} \\
+ \dfrac{p_i}{\Sigma p_j \text{ for all top-}k} & \text{if } p_i \text{ is top-}k \text{ largest in } \\{p_n | n \in N \\} \\
  0 & \text{otherwise} \\
  \end{cases}
  $$
@@ -67,7 +70,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
             
 $$
 P_i = \begin{cases} 
-\frac{p_i}{\Sigma p_j \text{ for all }j \in N_p} & \text{if } i \in N_p \\
+\dfrac{p_i}{\Sigma p_j \text{ for all }j \in N_p} & \text{if } i \in N_p \\
 0 & \text{otherwise} \\
 \end{cases}
 $$
