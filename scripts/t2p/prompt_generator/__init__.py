@@ -6,14 +6,14 @@ class SamplingMethod(Enum):
     TOP_K = 1,
     TOP_P = 2
 
-class ProbablityConversion(Enum):
+class ProbabilityConversion(Enum):
     CUTOFF_AND_POWER = 0,
     SOFTMAX = 1
 
 class GenerationSettings:
     def __init__(
         self, 
-        conversion: ProbablityConversion = ProbablityConversion.CUTOFF_AND_POWER, 
+        conversion: ProbabilityConversion = ProbabilityConversion.CUTOFF_AND_POWER, 
         prob_power: float = 2,
         sampling: SamplingMethod = SamplingMethod.TOP_K, 
         n:int = 20, 

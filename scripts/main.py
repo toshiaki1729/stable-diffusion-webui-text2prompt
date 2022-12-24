@@ -12,8 +12,8 @@ wd_like = None
 re_special = re.compile(r'([\\()])')
 
 def get_conversion(choice: int):
-    if choice == 0: return pgen.ProbablityConversion.CUTOFF_AND_POWER
-    elif choice == 1: return pgen.ProbablityConversion.SOFTMAX
+    if choice == 0: return pgen.ProbabilityConversion.CUTOFF_AND_POWER
+    elif choice == 1: return pgen.ProbabilityConversion.SOFTMAX
     else: raise NotImplementedError()
 
 def get_sampling(choice: int):
@@ -49,7 +49,7 @@ def on_ui_tabs():
                 
             with gr.Column():
                 gr.HTML(value='Generation Settings')
-                rb_prob_conversion_method = gr.Radio(choices=['Cutoff and Power', 'Softmax'], value='Cutoff and Power', type='index', label='Method to convert similarity into probablity')
+                rb_prob_conversion_method = gr.Radio(choices=['Cutoff and Power', 'Softmax'], value='Cutoff and Power', type='index', label='Method to convert similarity into probability')
                 sl_power = gr.Slider(0, 5, value=2, step=0.1, label='Power', interactive=True)
                 rb_sampling_method = gr.Radio(choices=['NONE', 'Top-k', 'Top-p (Nucleus)'], value='Top-k', type='index', label='Sampling method')
                 nb_max_tag_num = gr.Number(value=20, label='Max number of tags', precision=0, interactive=True)

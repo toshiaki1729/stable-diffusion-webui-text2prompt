@@ -5,7 +5,7 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 
-from . import PromptGenerator, GenerationSettings, SamplingMethod, ProbablityConversion
+from . import PromptGenerator, GenerationSettings, SamplingMethod, ProbabilityConversion
 from .. import settings
 
 
@@ -68,9 +68,9 @@ class WDLike(PromptGenerator):
         similarity: torch.Tensor = cos(sentence_embeddings[0], tag_tokens_dev)
 
         # Convert similarity into probablity
-        if opts.conversion == ProbablityConversion.CUTOFF_AND_POWER:
+        if opts.conversion == ProbabilityConversion.CUTOFF_AND_POWER:
             probs_cpu = torch.clamp(similarity.detach().cpu(), 0, 1) ** opts.prob_power
-        elif opts.conversion == ProbablityConversion.SOFTMAX:
+        elif opts.conversion == ProbabilityConversion.SOFTMAX:
             probs_cpu = torch.softmax(similarity.detach().cpu(), dim=0)
 
         probs_cpu = probs_cpu / probs_cpu.sum(dim=0)
