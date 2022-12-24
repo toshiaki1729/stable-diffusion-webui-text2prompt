@@ -26,7 +26,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
  It's doing nothing special;
  
  1. Danbooru tags and it's descriptions are in the `data` folder
-    - descriptions are generated from wiki and already tokenised
+    - descriptions are generated from wiki and already tokenized
     - [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model is used to tokenize the text
     - for now, some tags (such as <1k tagged or containing title of the work) are deleted to prevent from "noisy" result
  1. Tokenize your input text and calculate cosine similarity with all tag descriptions
@@ -65,9 +65,9 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
  $$
 
  #### "Top-p (Nucleus)"
- - $Find smallest N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
-   - set $N_p=\emptyset$ at first, and add index of $p_k$ into $N_p$ where $p_k$ is the $k$-th largest in $\\{p_n | n \in N \\}$ for $k = 1, 2, ..., N$, until the equation holds.
-            
+ - Find smallest $N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
+   - set $N_p=\emptyset$ at first, and add index of $p_{(k)}$ into $N_p$ where $p_{(k)}$ is the $k$-th largest in $\\{p_n | n \in N \\}$ for $k = 1, 2, ..., N$, until the equation holds.
+
 $$
 P_i = \begin{cases} 
 \dfrac{p_i}{\Sigma p_j \text{ for all }j \in N_p} & \text{if } i \in N_p \\
