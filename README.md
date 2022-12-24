@@ -6,7 +6,7 @@
 
 ## Installation
 ### Extensions tab on WebUI
-Copy `https://github.com/toshiaki1729/stable-diffusion-webui-txt2prompt.git` into "Install from URL" tab.
+Copy `https://github.com/toshiaki1729/stable-diffusion-webui-txt2prompt.git` into "Install from URL" tab and "Install".
 
 ### Install Manually
 To install, clone the repository into the `extensions` directory and restart the web UI.
