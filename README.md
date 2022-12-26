@@ -30,7 +30,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
   - or use "Softmax" (may generate unwanted tags more often)
 - For more strict result
   - decrease "k value" or "p value"
-  - use "Cutoff and Power" and increase "Power" ("Top-k" will ignore unless it is set to 0)
+  - use "Cutoff and Power" and increase "Power" ("Top-k" will ignore)
 - You can enter very long sentences, but the more specific it is, the fewer results you will get.
 
 ## How it works
