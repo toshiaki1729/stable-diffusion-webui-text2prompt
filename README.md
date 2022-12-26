@@ -22,6 +22,16 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 1. Push "Generate" button
 
 
+### Tips
+- For more creative result
+  - increase "k value" or "p value"
+  - disable "Use weighted choice"
+  - use "Softmax" (may generate unwanted tags more often)
+- For more strict result
+  - decrease "k value" or "p value"
+  - use "Cutoff and Power" and increase "Power"
+- You can enter very long sentences, but the more specific it is, the fewer results you will get.
+
 ## How it works
  It's doing nothing special;
  
@@ -29,7 +39,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
     - descriptions are generated from wiki and already tokenized
     - [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model is used to tokenize the text
     - for now, some tags (such as <1k tagged or containing title of the work) are deleted to prevent from "noisy" result
- 1. Tokenize your input text and calculate cosine similarity with all tag descriptions
+ 1. Tokenize your input text and calculate cosine similarity to each tag descriptions
  1. Choose some tags depending on their similarities
 
  ![](pic/pic1.png)
@@ -38,8 +48,8 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 
  ### More detailed
  $i \in N = \\{1, 2, ..., n\\}$ for index number of the tag  
- cosine similarity between tag description $d_i$ and your text $t$ : $S_C(d_i, t) = s_i$  
- probability for the tag to be chosen : $P_i$
+ $s_i = S_C(d_i, t)$  for cosine similarity between tag description $d_i$ and your text $t$
+ $P_i$ for probability for the tag to be chosen
 
  ### "Method to convert similarity into probability"
  #### "Cutoff and Power"
@@ -77,4 +87,4 @@ P_i = \begin{cases}
 \end{cases}
 $$
 
-Finally, the tags will be chosen randomly. The number of the tags will be $\leq$ "Max number of tags".
+Finally, the tags will be chosen randomly until the number $\leq$ "Max number of tags".
