@@ -79,7 +79,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 
  #### "Top-p (Nucleus)"
  - Find smallest $N_p \subset N$ such that $\Sigma_{i \in N_p}\ p_i\ \geq p$
-   - set $N_p=\emptyset$ at first, and add index of $p_{(k)}$ into $N_p$ where $p_{(k)}$ is the $k$-th largest in $\\{p_n | n \in N \\}$ for $k = 1, 2, ..., N$, until the equation holds.
+   - set $N_p=\emptyset$ at first, and add index of $p_{(k)}$ into $N_p$ where $p_{(k)}$ is the $k$-th largest in $\\{p_n | n \in N \\}$ for $k = 1, 2, ..., n$, until the equation holds.
 
 $$
 P_i = \begin{cases} 
@@ -88,4 +88,4 @@ P_i = \begin{cases}
 \end{cases}
 $$
 
-Finally, the tags will be chosen randomly until the number $\leq$ "Max number of tags".
+Finally, the tags will be chosen randomly while the number $\leq$ "Max number of tags".
