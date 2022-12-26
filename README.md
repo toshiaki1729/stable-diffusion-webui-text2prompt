@@ -26,7 +26,8 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 - For more creative result
   - increase "k value" or "p value"
   - disable "Use weighted choice"
-  - use "Softmax" (may generate unwanted tags more often)
+  - use "Cutoff and Power" and decrease "Power"
+  - or use "Softmax" (may generate unwanted tags more often)
 - For more strict result
   - decrease "k value" or "p value"
   - use "Cutoff and Power" and increase "Power"
