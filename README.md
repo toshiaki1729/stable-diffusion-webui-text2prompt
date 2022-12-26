@@ -26,11 +26,11 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 - For more creative result
   - increase "k value" or "p value"
   - disable "Use weighted choice"
-  - use "Cutoff and Power" and decrease "Power"  ("Top-k" will ignore this option unless it is set to 0)
+  - use "Cutoff and Power" and decrease "Power"
   - or use "Softmax" (may generate unwanted tags more often)
 - For more strict result
   - decrease "k value" or "p value"
-  - use "Cutoff and Power" and increase "Power"  ("Top-k" will ignore)
+  - use "Cutoff and Power" and increase "Power"
 - You can enter very long sentences, but the more specific it is, the fewer results you will get.
 
 ## How it works
