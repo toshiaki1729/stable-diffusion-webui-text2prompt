@@ -51,6 +51,8 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
  $$p_i = \sigma(\\{s_n|n \in N\\})_i = \dfrac{e^{s_i}}{ \Sigma_{j \in N}\ e^{s_j} }$$
 
  ### "Sampling method"
+ Yes, it doesn't sample like other "true" language models do, so "Filtering method" might be better.
+ 
  #### "NONE"
 
  $$P_i = p_i$$
@@ -75,4 +77,4 @@ P_i = \begin{cases}
 \end{cases}
 $$
 
-Finally, the tags will be chosen. The number of the tags will be $\leq$ "Max number of tags".
+Finally, the tags will be chosen randomly. The number of the tags will be $\leq$ "Max number of tags".
