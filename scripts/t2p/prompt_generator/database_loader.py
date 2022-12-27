@@ -20,13 +20,13 @@ class Database:
         self.size_name = m.group(1)
         self.model_name = m.group(2)
         if self.model_name not in settings.TOKENIZER_NAMES:
-            print(f'Cannot use database in {database_path}; Incompatible model name "{self.model_name}"')
+            print(f'[text2prompt] Cannot use database in {database_path}; Incompatible model name "{self.model_name}"')
             self.clear()
             return
         
         tag_path = os.path.join(os.path.dirname(database_path), f'{self.size_name}_tags.txt')
         if not os.path.isfile(tag_path):
-            print(f'Cannot use database in {database_path}; No tag file exists')
+            print(f'[text2prompt] Cannot use database in {database_path}; No tag file exists')
             self.clear()
             return
         
@@ -35,7 +35,7 @@ class Database:
         
         tag_idx_path = os.path.join(os.path.dirname(database_path), f'{self.size_name}_tagidx.csv')
         if not os.path.isfile(tag_idx_path):
-            print(f'Cannot read tag indices file. Tag count filter cannot be used.')
+            print(f'[text2prompt] Cannot read tag indices file. Tag count filter cannot be used.')
         else:
             with open(tag_idx_path, mode='r', encoding='utf8', newline='') as f:
                 cr = csv.reader(f)
@@ -92,7 +92,7 @@ class DatabaseLoader:
                 ds = Database(filepath, re_filename)
                 self.datas[ds.name()] = ds
         print('[text2prompt] Loaded following databases')
-        print(sorted(self.datas.keys()))
+        print(f'    {sorted(self.datas.keys())}')
     
 
     def load(self, database_name: str):

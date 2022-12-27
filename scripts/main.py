@@ -68,7 +68,8 @@ def on_ui_tabs():
                 gr.HTML(value='Generation Settings')
                 choices = wd_like.get_model_names()
                 with gr.Column():
-                    dd_database = gr.Dropdown(choices=choices, value=None, interactive=True, label='Database')
+                    if choices: wd_like.load_data(choices[0])
+                    dd_database = gr.Dropdown(choices=choices, value=choices[0] if choices else None, interactive=True, label='Database')
                     sl_tag_range = gr.Slider(0, 8, 0, step=1, interactive=True, label='Tag count filter')
                     txt_tag_range = gr.HTML(get_tag_range_txt(0))
                 with gr.Column():

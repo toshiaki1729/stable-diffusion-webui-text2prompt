@@ -38,13 +38,13 @@ class WDLike(PromptGenerator):
         self.loaded_model_name = None
     
     def load_data(self, database_name: str):
-        print('Loading database...')
+        print('[text2prompt] Loading database...')
         self.database = self.database_loader.load(database_name)
-        print('Loaded')
+        print('[text2prompt] Loaded')
     
     def load_model(self):
         if self.database is None:
-            print('Cannot load model; Database is not loaded.')
+            print('[text2prompt] Cannot load model; Database is not loaded.')
             return
         from modules.devices import device
         # brought from https://huggingface.co/sentence-transformers/all-mpnet-base-v2#usage-huggingface-transformers
@@ -52,11 +52,11 @@ class WDLike(PromptGenerator):
         if self.loaded_model_name and self.loaded_model_name == self.database.model_name:
             return
         else:
-            print('Loading model...')
+            print('[text2prompt] Loading model...')
             self.tokenizer = AutoTokenizer.from_pretrained(settings.TOKENIZER_MODELS[self.database.model_name])
             self.model = AutoModel.from_pretrained(settings.TOKENIZER_MODELS[self.database.model_name]).to(device)
             self.loaded_model_name = self.database.model_name
-            print('model loaded')
+            print('[text2prompt] model loaded')
 
     def unload_model(self):
         if self.tokenizer is not None:
