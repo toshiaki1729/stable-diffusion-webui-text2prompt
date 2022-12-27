@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 
 from . import PromptGenerator, GenerationSettings, SamplingMethod, ProbabilityConversion
+from .database_loader import DatabaseLoader
 from .. import settings
 
 
@@ -21,28 +22,62 @@ def mean_pooling(model_output, attention_mask):
 
 class WDLike(PromptGenerator):
     def __init__(self):
-        self.tags = []
+        self.clear()
+        self.database_loader = DatabaseLoader(settings.DATABASE_PATH_DANBOORU, settings.RE_TOKENFILE_DANBOORU)
+
+    def get_model_names(self):
+        return sorted(self.database_loader.datas.keys())
+
+    def clear(self):
+        self.database_loader = None
+        self.database = None
+        self.tags = None
         self.tokens = None
         self.tokenizer = None
         self.model = None
-        self.load_data()
+        self.loaded_model_name = None
     
-    def load_data(self):
-        with open(settings.WDLIKE_TAG_PATH, mode='r', encoding='utf8', newline='\n') as f:
-            self.tags = [l.strip() for l in f.readlines()]
-        with open(settings.WDLIKE_TOKEN_PATH, mode='rb') as f:
-            self.tokens = np.load(f)
+    def load_data(self, database_name: str):
+        print('Loading database...')
+        self.database = self.database_loader.load(database_name)
+        print('Loaded')
     
     def load_model(self):
+        if self.database is None:
+            print('Cannot load model; Database is not loaded.')
+            return
         from modules.devices import device
         # brought from https://huggingface.co/sentence-transformers/all-mpnet-base-v2#usage-huggingface-transformers
         # Load model from HuggingFace Hub
-        self.tokenizer = AutoTokenizer.from_pretrained(settings.WDLIKE_MODEL_NAME)
-        self.model = AutoModel.from_pretrained(settings.WDLIKE_MODEL_NAME).to(device)
+        if self.loaded_model_name and self.loaded_model_name == self.database.model_name:
+            return
+        else:
+            print('Loading model...')
+            self.tokenizer = AutoTokenizer.from_pretrained(settings.TOKENIZER_MODELS[self.database.model_name])
+            self.model = AutoModel.from_pretrained(settings.TOKENIZER_MODELS[self.database.model_name]).to(device)
+            self.loaded_model_name = self.database.model_name
+            print('model loaded')
+
+    def unload_model(self):
+        if self.tokenizer is not None:
+            del self.tokenizer
+        if self.model is not None:
+            del self.model
+
+    def ready(self) -> bool:
+        return self.database is not None \
+            and self.database.loaded() \
+            and self.model is not None \
+            and self.tokenizer is not None \
+            and self.loaded_model_name and self.loaded_model_name == self.database.model_name
 
     def __call__(self, text: str, opts: GenerationSettings) -> List[str]:
-        if not self.model or not self.tokenizer:
-            return ''
+        if not self.ready(): return ''
+
+        i = max(0, min(opts.tag_range, len(self.database.tag_idx) - 1))
+        r = self.database.tag_idx[i][1]
+        self.tokens = self.database.data[:r, :]
+        self.tags = self.database.tags[:r]
         
         from modules.devices import device
         

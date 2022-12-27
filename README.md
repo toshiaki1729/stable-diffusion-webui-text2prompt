@@ -18,8 +18,12 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 
 
 ## Usage
+
 1. Type some words into "Input Theme"
 1. Push "Generate" button
+
+![](pic/pic1.png)
+
 
 
 ### Tips
@@ -34,20 +38,34 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 - You can enter very long sentences, but the more specific it is, the fewer results you will get.
 
 ## How it works
+
  It's doing nothing special;
  
  1. Danbooru tags and it's descriptions are in the `data` folder
     - descriptions are generated from wiki and already tokenized
-    - [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) model is used to tokenize the text
-    - for now, some tags (such as <1k tagged or containing title of the work) are deleted to prevent from "noisy" result
- 1. Tokenize your input text and calculate cosine similarity to each tag descriptions
+    - [all-mpnet-base-v2](https://huggingface.co/sentence-transformers/all-mpnet-base-v2) and [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) models are used to tokenize the text
+ 1. Tokenize your input text and calculate cosine similarity with all tag descriptions
  1. Choose some tags depending on their similarities
 
- ![](pic/pic1.png)
+
+### Database (Optional)
+
+You can choose the following dataset if needed.  
+Download the following, unzip and put its contents into `text2prompt-root-dir/data/danbooru/`.
+
+|Tag description|all-mpnet-base-v2|all-MiniLM-L6-v2|
+|:---|:---:|:---:|
+|**well filtered (recommended)**|[download](https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt/releases/download/danbooru-database-v1.0.0/danbooru_strict_all-mpnet-base-v2.zip) (preinstalled)|[download](https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt/releases/download/danbooru-database-v1.0.0/danbooru_strict_all-MiniLM-L6-v2.zip)|
+|normal (same as previous one)|[download](https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt/releases/download/danbooru-database-v1.0.0/danbooru_normal_all-mpnet-base-v2.zip)|[download](https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt/releases/download/danbooru-database-v1.0.0/danbooru_normal_all-MiniLM-L6-v2.zip)|
+|full (noisy)|[download](https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt/releases/download/danbooru-database-v1.0.0/danbooru_full_all-mpnet-base-v2.zip)|[download](https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt/releases/download/danbooru-database-v1.0.0/danbooru_full_all-MiniLM-L6-v2.zip)|
+ 
+**well filtered:** Tags are removed if their description include the title of the work. These tags are heavily related to a specific work, meaning they are not "general" tags.  
+**normal:** Tags containing the title of a work, like tag_name(work_name), are removed.  
+**full:** Including all tags.
  
 ---
 
- ### More detailed
+## More detailed description
  $i \in N = \\{1, 2, ..., n\\}$ for index number of the tag  
  $s_i = S_C(d_i, t)$  for cosine similarity between tag description $d_i$ and your text $t$
  $P_i$ for probability for the tag to be chosen

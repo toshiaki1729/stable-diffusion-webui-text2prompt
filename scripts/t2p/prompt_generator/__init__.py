@@ -12,8 +12,9 @@ class ProbabilityConversion(Enum):
 
 class GenerationSettings:
     def __init__(
-        self, 
-        conversion: ProbabilityConversion = ProbabilityConversion.CUTOFF_AND_POWER, 
+        self,
+        tag_range: int = 0,
+        conversion: ProbabilityConversion = ProbabilityConversion.CUTOFF_AND_POWER,
         prob_power: float = 2,
         sampling: SamplingMethod = SamplingMethod.TOP_K, 
         n:int = 20, 
@@ -21,6 +22,7 @@ class GenerationSettings:
         p: Optional[float] = 0.3, 
         weighted: bool = True):
 
+        self.tag_range = tag_range
         self.sampling = sampling
         self.conversion = conversion
         self.n = n
@@ -31,6 +33,13 @@ class GenerationSettings:
 
 
 class PromptGenerator:
+    def clear(self): pass
+    def load_data(self, model_id: str, data_id: str):
+        raise NotImplementedError()
+    def load_model(self, model_id: str):
+        raise NotImplementedError()
+    def ready(self) -> bool:
+        raise NotImplementedError()
     def __call__(self, text: str, settings: GenerationSettings) -> List[str]:
         raise NotImplementedError()
 

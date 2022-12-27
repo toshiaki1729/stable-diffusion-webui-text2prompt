@@ -6,7 +6,7 @@ from modules import generation_parameters_copypaste as params_copypaste
 
 import scripts.t2p.prompt_generator as pgen
 
-wd_like = None
+wd_like = pgen.WDLike()
 
 # brought from modules/deepbooru.py
 re_special = re.compile(r'([\\()])')
@@ -22,17 +22,34 @@ def get_sampling(choice: int):
     elif choice == 2: return pgen.SamplingMethod.TOP_P
     else: raise NotImplementedError()
 
-def generate_prompt(text: str, conversion: int, power: float, sampling: int, n: int, k: int, p: float, weighted: bool, replace_underscore: bool, excape_brackets: bool):
-    global wd_like
-    if not wd_like:
-        print('Loading tag data and model')
-        wd_like = pgen.WDLike()
-        wd_like.load_model()
-        print('Loaded')
-    tags = wd_like(text, pgen.GenerationSettings(get_conversion(conversion), power, get_sampling(sampling), n, k, p, weighted))
+def get_tag_range_txt(tag_range: int):
+    if wd_like.database is None:
+        return 'Tag range: NONE'
+    maxval = len(wd_like.database.tag_idx) - 1
+    i = max(0, min(tag_range, maxval))
+    r = wd_like.database.tag_idx[i]
+    return f'Tag range: <b> &gt; {r[0]} tagged</b> ({r[1] + 1} tags total)'
+
+
+def dd_database_changed(database_name: str, tag_range: int):
+    wd_like.load_data(database_name)
+    return [
+        gr.Slider.update(tag_range, 0, len(wd_like.database.tag_idx) - 1),
+        get_tag_range_txt(tag_range)
+    ]
+
+
+def sl_tag_range_changed(tag_range: int):
+    return get_tag_range_txt(tag_range)
+
+
+def generate_prompt(text: str, tag_range: int, conversion: int, power: float, sampling: int, n: int, k: int, p: float, weighted: bool, replace_underscore: bool, excape_brackets: bool):
+    wd_like.load_model() #skip loading if not needed
+    tags = wd_like(text, pgen.GenerationSettings(tag_range, get_conversion(conversion), power, get_sampling(sampling), n, k, p, weighted))
     if replace_underscore: tags = [t.replace('_', ' ') for t in tags]
     if excape_brackets: tags = [re.sub(re_special, r'\\\1', t) for t in tags]
     return ', '.join(tags)
+
 
 def on_ui_tabs():
     with gr.Blocks(analytics_enabled=False) as text2prompt_interface:
@@ -47,15 +64,33 @@ def on_ui_tabs():
                     buttons = params_copypaste.create_buttons(["txt2img", "img2img", "inpaint", "extras"])
                 params_copypaste.bind_buttons(buttons, None, tb_output)
                 
-            with gr.Column():
+            with gr.Column(variant='panel'):
                 gr.HTML(value='Generation Settings')
-                rb_prob_conversion_method = gr.Radio(choices=['Cutoff and Power', 'Softmax'], value='Cutoff and Power', type='index', label='Method to convert similarity into probability')
-                sl_power = gr.Slider(0, 5, value=2, step=0.1, label='Power', interactive=True)
-                rb_sampling_method = gr.Radio(choices=['NONE', 'Top-k', 'Top-p (Nucleus)'], value='Top-k', type='index', label='Sampling method')
-                nb_max_tag_num = gr.Number(value=20, label='Max number of tags', precision=0, interactive=True)
-                nb_k_value = gr.Number(value=50, label='k value', precision=0, interactive=True)
-                sl_p_value = gr.Slider(0, 1, label='p value', value=0.1, step=0.01, interactive=True)
-                cb_weighted = gr.Checkbox(value=True, label='Use weighted choice', interactive=True)
+                choices = wd_like.get_model_names()
+                with gr.Column():
+                    dd_database = gr.Dropdown(choices=choices, value=None, interactive=True, label='Database')
+                    sl_tag_range = gr.Slider(0, 8, 0, step=1, interactive=True, label='Tag count filter')
+                    txt_tag_range = gr.HTML(get_tag_range_txt(0))
+                with gr.Column():
+                    rb_prob_conversion_method = gr.Radio(choices=['Cutoff and Power', 'Softmax'], value='Cutoff and Power', type='index', label='Method to convert similarity into probability')
+                    sl_power = gr.Slider(0, 5, value=2, step=0.1, label='Power', interactive=True)
+                    rb_sampling_method = gr.Radio(choices=['NONE', 'Top-k', 'Top-p (Nucleus)'], value='Top-k', type='index', label='Sampling method')
+                    nb_max_tag_num = gr.Number(value=20, label='Max number of tags', precision=0, interactive=True)
+                    nb_k_value = gr.Number(value=50, label='k value', precision=0, interactive=True)
+                    sl_p_value = gr.Slider(0, 1, label='p value', value=0.1, step=0.01, interactive=True)
+                    cb_weighted = gr.Checkbox(value=True, label='Use weighted choice', interactive=True)
+
+        dd_database.change(
+            fn=dd_database_changed,
+            inputs=[dd_database, sl_tag_range],
+            outputs=[sl_tag_range, txt_tag_range]
+        )
+
+        sl_tag_range.change(
+            fn=sl_tag_range_changed,
+            inputs=sl_tag_range,
+            outputs=txt_tag_range
+        )
 
         nb_max_tag_num.change(
             fn=lambda x: max(0, x),
@@ -71,7 +106,19 @@ def on_ui_tabs():
 
         btn_generate.click(
             fn=generate_prompt,
-            inputs=[tb_input, rb_prob_conversion_method, sl_power, rb_sampling_method, nb_max_tag_num, nb_k_value, sl_p_value, cb_weighted, cb_replace_underscore, cb_escape_brackets],
+            inputs=[
+                tb_input,
+                sl_tag_range,
+                rb_prob_conversion_method,
+                sl_power,
+                rb_sampling_method,
+                nb_max_tag_num,
+                nb_k_value,
+                sl_p_value,
+                cb_weighted,
+                cb_replace_underscore,
+                cb_escape_brackets
+            ],
             outputs=tb_output
         )
         
