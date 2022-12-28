@@ -5,10 +5,15 @@ import torch
 import torch.nn.functional as F
 from transformers import AutoModel, AutoTokenizer
 
-from . import PromptGenerator, GenerationSettings, SamplingMethod, ProbabilityConversion
-from .database_loader import DatabaseLoader
-from .. import settings
+import scripts.t2p.settings as settings
 
+if settings.DEVELOP:
+    import scripts.t2p.prompt_generator as pgen
+    import scripts.t2p.prompt_generator.database_loader as dloader
+else:
+    from scripts.t2p.dynamic_import import dynamic_import
+    pgen = dynamic_import('scripts/t2p/prompt_generator/__init__.py')
+    dloader = dynamic_import('scripts/t2p/prompt_generator/database_loader.py')
 
 NUM_CHOICE = 10
 K_VALUE = 50
@@ -20,10 +25,10 @@ def mean_pooling(model_output, attention_mask):
     return torch.sum(token_embeddings * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
 
 
-class WDLike(PromptGenerator):
+class WDLike(pgen.PromptGenerator):
     def __init__(self):
         self.clear()
-        self.database_loader = DatabaseLoader(settings.DATABASE_PATH_DANBOORU, settings.RE_TOKENFILE_DANBOORU)
+        self.database_loader = dloader.DatabaseLoader(settings.DATABASE_PATH_DANBOORU, settings.RE_TOKENFILE_DANBOORU)
 
     def get_model_names(self):
         return sorted(self.database_loader.datas.keys())
@@ -38,9 +43,9 @@ class WDLike(PromptGenerator):
         self.loaded_model_name = None
     
     def load_data(self, database_name: str):
-        print('[text2prompt] Loading database...')
+        print(f'[text2prompt] Loading database with name "{database_name}"...')
         self.database = self.database_loader.load(database_name)
-        print('[text2prompt] Loaded')
+        print('[text2prompt] Database loaded')
     
     def load_model(self):
         if self.database is None:
@@ -52,11 +57,11 @@ class WDLike(PromptGenerator):
         if self.loaded_model_name and self.loaded_model_name == self.database.model_name:
             return
         else:
-            print('[text2prompt] Loading model...')
+            print(f'[text2prompt] Loading model with name "{self.database.model_name}"...')
             self.tokenizer = AutoTokenizer.from_pretrained(settings.TOKENIZER_MODELS[self.database.model_name])
             self.model = AutoModel.from_pretrained(settings.TOKENIZER_MODELS[self.database.model_name]).to(device)
             self.loaded_model_name = self.database.model_name
-            print('[text2prompt] model loaded')
+            print('[text2prompt] Model loaded')
 
     def unload_model(self):
         if self.tokenizer is not None:
@@ -71,7 +76,7 @@ class WDLike(PromptGenerator):
             and self.tokenizer is not None \
             and self.loaded_model_name and self.loaded_model_name == self.database.model_name
 
-    def __call__(self, text: str, opts: GenerationSettings) -> List[str]:
+    def __call__(self, text: str, opts: pgen.GenerationSettings) -> List[str]:
         if not self.ready(): return ''
 
         i = max(0, min(opts.tag_range, len(self.database.tag_idx) - 1))
@@ -103,16 +108,16 @@ class WDLike(PromptGenerator):
         similarity: torch.Tensor = cos(sentence_embeddings[0], tag_tokens_dev)
 
         # Convert similarity into probablity
-        if opts.conversion == ProbabilityConversion.CUTOFF_AND_POWER:
+        if opts.conversion is pgen.ProbabilityConversion.CUTOFF_AND_POWER:
             probs_cpu = torch.clamp(similarity.detach().cpu(), 0, 1) ** opts.prob_power
-        elif opts.conversion == ProbabilityConversion.SOFTMAX:
+        elif opts.conversion is pgen.ProbabilityConversion.SOFTMAX:
             probs_cpu = torch.softmax(similarity.detach().cpu(), dim=0)
 
         probs_cpu = probs_cpu / probs_cpu.sum(dim=0)
 
         results = None
 
-        if opts.sampling == SamplingMethod.NONE:
+        if opts.sampling is pgen.SamplingMethod.NONE:
             tags_np = np.array(self.tags)
             opts.n = min(tags_np.shape[0], opts.n)
             if opts.n <= 0: return []
@@ -128,7 +133,7 @@ class WDLike(PromptGenerator):
                 # Just sample randomly
                 results = np.random.choice(a=tags_np, size=opts.n, replace=False)
 
-        elif opts.sampling == SamplingMethod.TOP_K:
+        elif opts.sampling is pgen.SamplingMethod.TOP_K:
             probs, indices = probs_cpu.topk(opts.k)
             indices = indices.detach().numpy().tolist()
             if len(indices) <= 0: return []
@@ -147,7 +152,7 @@ class WDLike(PromptGenerator):
                 results = np.random.choice(tags_np, opts.n, replace=False)
         
         # brought from https://nn.labml.ai/sampling/nucleus.html
-        elif opts.sampling == SamplingMethod.TOP_P:
+        elif opts.sampling is pgen.SamplingMethod.TOP_P:
             sorted_probs, sorted_indices = probs_cpu.sort(descending=True)
             cs_probs = torch.cumsum(sorted_probs, dim=0)
             nucleus = cs_probs < opts.p

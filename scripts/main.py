@@ -4,9 +4,18 @@ import gradio as gr
 from modules import script_callbacks
 from modules import generation_parameters_copypaste as params_copypaste
 
-import scripts.t2p.prompt_generator as pgen
+import scripts.t2p.settings as settings
 
-wd_like = pgen.WDLike()
+if settings.DEVELOP:
+    import scripts.t2p.prompt_generator as pgen
+    from scripts.t2p.prompt_generator.wd_like import WDLike
+else:
+    from scripts.t2p.dynamic_import import dynamic_import
+    _wd_like = dynamic_import('scripts/t2p/prompt_generator/wd_like.py')
+    WDLike = _wd_like.WDLike
+    pgen = _wd_like.pgen
+
+wd_like = WDLike()
 
 # brought from modules/deepbooru.py
 re_special = re.compile(r'([\\()])')
@@ -28,7 +37,7 @@ def get_tag_range_txt(tag_range: int):
     maxval = len(wd_like.database.tag_idx) - 1
     i = max(0, min(tag_range, maxval))
     r = wd_like.database.tag_idx[i]
-    return f'Tag range: <b> &gt; {r[0]} tagged</b> ({r[1] + 1} tags total)'
+    return f'Tag range: <b> ≥ {r[0]} tagged</b> ({r[1] + 1} tags total)'
 
 
 def dd_database_changed(database_name: str, tag_range: int):
@@ -68,8 +77,8 @@ def on_ui_tabs():
                 gr.HTML(value='Generation Settings')
                 choices = wd_like.get_model_names()
                 with gr.Column():
-                    if choices: wd_like.load_data(choices[0])
-                    dd_database = gr.Dropdown(choices=choices, value=choices[0] if choices else None, interactive=True, label='Database')
+                    if choices: wd_like.load_data(choices[-1])
+                    dd_database = gr.Dropdown(choices=choices, value=choices[-1] if choices else None, interactive=True, label='Database')
                     sl_tag_range = gr.Slider(0, 8, 0, step=1, interactive=True, label='Tag count filter')
                     txt_tag_range = gr.HTML(get_tag_range_txt(0))
                 with gr.Column():

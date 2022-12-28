@@ -4,7 +4,7 @@ import csv
 from typing import Dict
 import numpy as np
 
-from .. import settings
+import scripts.t2p.settings as settings
 
 
 class Database:
@@ -91,8 +91,9 @@ class DatabaseLoader:
             if ext == '.npz':
                 ds = Database(filepath, re_filename)
                 self.datas[ds.name()] = ds
-        print('[text2prompt] Loaded following databases')
-        print(f'    {sorted(self.datas.keys())}')
+        print('[text2prompt] Following databases are available:')
+        for name in sorted(self.datas.keys()):
+            print(f'    {name}')
     
 
     def load(self, database_name: str):

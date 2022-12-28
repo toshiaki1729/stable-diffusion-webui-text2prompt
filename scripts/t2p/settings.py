@@ -2,6 +2,9 @@ import os
 import re
 from modules import scripts
 
+# to use intellisense on vscode
+DEVELOP = False
+
 def get_abspath(path: str):
     return os.path.abspath(os.path.join(scripts.basedir(), path))
 

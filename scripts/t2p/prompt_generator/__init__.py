@@ -42,6 +42,3 @@ class PromptGenerator:
         raise NotImplementedError()
     def __call__(self, text: str, settings: GenerationSettings) -> List[str]:
         raise NotImplementedError()
-
-
-from .wd_like import WDLike
