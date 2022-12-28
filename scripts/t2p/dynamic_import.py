@@ -1,5 +1,3 @@
-print('[text2prompt] Load dynamic_import.py')
-
 def dynamic_import(path: str):
     import os
     from modules import scripts, script_loading
