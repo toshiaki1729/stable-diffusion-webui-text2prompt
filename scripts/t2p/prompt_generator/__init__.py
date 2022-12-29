@@ -40,5 +40,5 @@ class PromptGenerator:
         raise NotImplementedError()
     def ready(self) -> bool:
         raise NotImplementedError()
-    def __call__(self, text: str, settings: GenerationSettings) -> List[str]:
+    def __call__(self, text: str, text_neg: str, neg_weight: float, settings: GenerationSettings) -> List[str]:
         raise NotImplementedError()

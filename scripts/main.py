@@ -52,9 +52,9 @@ def sl_tag_range_changed(tag_range: int):
     return get_tag_range_txt(tag_range)
 
 
-def generate_prompt(text: str, tag_range: int, conversion: int, power: float, sampling: int, n: int, k: int, p: float, weighted: bool, replace_underscore: bool, excape_brackets: bool):
+def generate_prompt(text: str, text_neg: str, neg_weight: float, tag_range: int, conversion: int, power: float, sampling: int, n: int, k: int, p: float, weighted: bool, replace_underscore: bool, excape_brackets: bool):
     wd_like.load_model() #skip loading if not needed
-    tags = wd_like(text, pgen.GenerationSettings(tag_range, get_conversion(conversion), power, get_sampling(sampling), n, k, p, weighted))
+    tags = wd_like(text, text_neg, neg_weight, pgen.GenerationSettings(tag_range, get_conversion(conversion), power, get_sampling(sampling), n, k, p, weighted))
     if replace_underscore: tags = [t.replace('_', ' ') for t in tags]
     if excape_brackets: tags = [re.sub(re_special, r'\\\1', t) for t in tags]
     return ', '.join(tags)
@@ -65,6 +65,8 @@ def on_ui_tabs():
         with gr.Row():
             with gr.Column():
                 tb_input = gr.Textbox(label='Input Theme', interactive=True)
+                tb_input_neg = gr.Textbox(label='Input Negative Theme', interactive=True)
+                sl_negative_strength = gr.Slider(0, 3, value=1, step=0.01, label='Negative strength', interactive=True)
                 cb_replace_underscore = gr.Checkbox(value=True, label='Replace underscore in tag with whitespace', interactive=True)
                 cb_escape_brackets = gr.Checkbox(value=True, label='Escape brackets in tag', interactive=True)
                 btn_generate = gr.Button(value='Generate', variant='primary')
@@ -118,6 +120,8 @@ def on_ui_tabs():
             fn=generate_prompt,
             inputs=[
                 tb_input,
+                tb_input_neg,
+                sl_negative_strength,
                 sl_tag_range,
                 rb_prob_conversion_method,
                 sl_power,

@@ -76,7 +76,7 @@ class WDLike(pgen.PromptGenerator):
             and self.tokenizer is not None \
             and self.loaded_model_name and self.loaded_model_name == self.database.model_name
 
-    def __call__(self, text: str, opts: pgen.GenerationSettings) -> List[str]:
+    def __call__(self, text: str, text_neg: str, neg_weight: float, opts: pgen.GenerationSettings) -> List[str]:
         if not self.ready(): return ''
 
         i = max(0, min(opts.tag_range, len(self.database.tag_idx) - 1))
@@ -90,15 +90,19 @@ class WDLike(pgen.PromptGenerator):
         # brought from https://huggingface.co/sentence-transformers/all-mpnet-base-v2#usage-huggingface-transformers
         # Tokenize sentences
         encoded_input = self.tokenizer(text, padding=True, truncation=True, return_tensors='pt').to(device)
+        if text_neg:
+            encoded_input_neg = self.tokenizer(text_neg, padding=True, truncation=True, return_tensors='pt').to(device)
         # Compute token embeddings
         with torch.no_grad():
             model_output = self.model(**encoded_input)
+            if text_neg:
+                model_output_neg = self.model(**encoded_input_neg)
         
         # Perform pooling
         sentence_embeddings = mean_pooling(model_output, encoded_input['attention_mask'])
+        if text_neg:
+            sentence_embeddings -= neg_weight*mean_pooling(model_output_neg, encoded_input_neg['attention_mask'])
 
-        # Normalize embeddings
-        sentence_embeddings = F.normalize(sentence_embeddings, p=2, dim=1)
         # --------------------------------------------------------------------------------------------------------------------------------
 
         # Get cosine similarity between given text and tag descriptions
@@ -114,6 +118,7 @@ class WDLike(pgen.PromptGenerator):
             probs_cpu = torch.softmax(similarity.detach().cpu(), dim=0)
 
         probs_cpu = probs_cpu / probs_cpu.sum(dim=0)
+        probs_cpu = probs_cpu.nan_to_num()
 
         results = None
 
@@ -123,7 +128,6 @@ class WDLike(pgen.PromptGenerator):
             if opts.n <= 0: return []
             if opts.weighted:
                 probs_np = probs_cpu.detach().numpy()
-                probs_np /= np.sum(probs_np)
 
                 if np.count_nonzero(probs_np) <= opts.n:
                     results = tags_np
@@ -143,6 +147,7 @@ class WDLike(pgen.PromptGenerator):
             if opts.weighted:
                 probs_np = probs.detach().numpy()
                 probs_np /= np.sum(probs_np)
+                probs_np = np.nan_to_num(probs_np)
 
                 if np.count_nonzero(probs_np) <= opts.n:
                     results = tags_np
@@ -168,6 +173,7 @@ class WDLike(pgen.PromptGenerator):
             if opts.weighted:
                 probs_np = np.array([sorted_probs[i] for i in indices])
                 probs_np /= np.sum(probs_np)
+                probs_np = np.nan_to_num(probs_np)
                 
                 if np.count_nonzero(probs_np) <= opts.n:
                     results = tags_np
