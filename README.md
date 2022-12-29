@@ -49,7 +49,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
  1. Choose some tags depending on their similarities
 
 
-### Database (Optional)
+## Database (Optional)
 
 You can choose the following dataset if needed.  
 Download the following, unzip and put its contents into `text2prompt-root-dir/data/danbooru/`.
