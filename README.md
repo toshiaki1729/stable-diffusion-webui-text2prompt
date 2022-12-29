@@ -20,6 +20,7 @@ git clone https://github.com/toshiaki1729/stable-diffusion-webui-text2prompt.git
 ## Usage
 
 1. Type some words into "Input Theme"
+1. Type some unwanted words into "Input Theme"
 1. Push "Generate" button
 
 ![](pic/pic1.png)
