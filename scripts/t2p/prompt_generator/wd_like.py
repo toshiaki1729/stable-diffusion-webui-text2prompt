@@ -128,9 +128,12 @@ class WDLike(pgen.PromptGenerator):
             if opts.n <= 0: return []
             if opts.weighted:
                 probs_np = probs_cpu.detach().numpy()
-
-                if np.count_nonzero(probs_np) <= opts.n:
-                    results = np.random.choice(a=tags_np, size=opts.n, replace=False)
+                num_nonzero = np.count_nonzero(probs_np)
+                if num_nonzero <= opts.n:
+                    if num_nonzero > 0:
+                        results=np.random.choice(tags_np, num_nonzero, replace=False, p=probs_np)
+                    else:
+                        results = np.random.choice(tags_np, opts.n, replace=False)
                 else:
                     results = np.random.choice(a=tags_np, size=opts.n, replace=False, p=probs_np)
             else:
@@ -148,9 +151,12 @@ class WDLike(pgen.PromptGenerator):
                 probs_np = probs.detach().numpy()
                 probs_np /= np.sum(probs_np)
                 probs_np = np.nan_to_num(probs_np)
-
-                if np.count_nonzero(probs_np) <= opts.n:
-                    results = np.random.choice(tags_np, opts.n, replace=False)
+                num_nonzero = np.count_nonzero(probs_np)
+                if num_nonzero <= opts.n:
+                    if num_nonzero > 0:
+                        results=np.random.choice(tags_np, num_nonzero, replace=False, p=probs_np)
+                    else:
+                        results = np.random.choice(tags_np, opts.n, replace=False)
                 else:
                     results = np.random.choice(tags_np, opts.n, replace=False, p=probs_np)
             else:
@@ -174,9 +180,12 @@ class WDLike(pgen.PromptGenerator):
                 probs_np = np.array([sorted_probs[i] for i in indices])
                 probs_np /= np.sum(probs_np)
                 probs_np = np.nan_to_num(probs_np)
-                
-                if np.count_nonzero(probs_np) <= opts.n:
-                    results = np.random.choice(tags_np, opts.n, replace=False)
+                num_nonzero = np.count_nonzero(probs_np)
+                if num_nonzero <= opts.n:
+                    if num_nonzero > 0:
+                        results=np.random.choice(tags_np, num_nonzero, replace=False, p=probs_np)
+                    else:
+                        results = np.random.choice(tags_np, opts.n, replace=False)
                 else:
                     results = np.random.choice(tags_np, opts.n, replace=False, p=probs_np)
             else:
