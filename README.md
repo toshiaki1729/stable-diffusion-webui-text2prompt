@@ -67,7 +67,7 @@ Download the following, unzip and put its contents into `text2prompt-root-dir/da
 
 ## More detailed description
  $i \in N = \\{1, 2, ..., n\\}$ for index number of the tag  
- $s_i = S_C(d_i, t)$  for cosine similarity between tag description $d_i$ and your text $t$
+ $s_i = S_C(d_i, t)$  for cosine similarity between tag description $d_i$ and your text $t$  
  $P_i$ for probability for the tag to be chosen
 
  ### "Method to convert similarity into probability"
