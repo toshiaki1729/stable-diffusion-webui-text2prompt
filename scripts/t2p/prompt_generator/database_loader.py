@@ -42,7 +42,7 @@ class Database:
                 for row in cr:
                     self.tag_idx.append((int(row[0]), int(row[1])))
             self.tag_idx.sort(key=lambda t : t[0])
-        self.tag_idx = [(0, len(self.tags))] + self.tag_idx
+        self.tag_idx = [(0, len(self.tags) - 1)] + self.tag_idx
     
 
     def clear(self):
