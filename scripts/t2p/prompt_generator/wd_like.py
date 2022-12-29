@@ -130,7 +130,7 @@ class WDLike(pgen.PromptGenerator):
                 probs_np = probs_cpu.detach().numpy()
 
                 if np.count_nonzero(probs_np) <= opts.n:
-                    results = tags_np
+                    results = np.random.choice(a=tags_np, size=opts.n, replace=False)
                 else:
                     results = np.random.choice(a=tags_np, size=opts.n, replace=False, p=probs_np)
             else:
@@ -150,7 +150,7 @@ class WDLike(pgen.PromptGenerator):
                 probs_np = np.nan_to_num(probs_np)
 
                 if np.count_nonzero(probs_np) <= opts.n:
-                    results = tags_np
+                    results = np.random.choice(tags_np, opts.n, replace=False)
                 else:
                     results = np.random.choice(tags_np, opts.n, replace=False, p=probs_np)
             else:
@@ -176,7 +176,7 @@ class WDLike(pgen.PromptGenerator):
                 probs_np = np.nan_to_num(probs_np)
                 
                 if np.count_nonzero(probs_np) <= opts.n:
-                    results = tags_np
+                    results = np.random.choice(tags_np, opts.n, replace=False)
                 else:
                     results = np.random.choice(tags_np, opts.n, replace=False, p=probs_np)
             else:
