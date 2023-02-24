@@ -108,7 +108,7 @@ class WDLike(pgen.PromptGenerator):
         # Get cosine similarity between given text and tag descriptions
         cos = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
 
-        tag_tokens_dev = torch.from_numpy(self.tokens).to(device)
+        tag_tokens_dev = torch.from_numpy(self.tokens).type(torch.float32).to(device)
         similarity: torch.Tensor = cos(sentence_embeddings[0], tag_tokens_dev)
 
         # Convert similarity into probablity
