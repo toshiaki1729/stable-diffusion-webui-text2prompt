@@ -8,11 +8,11 @@ import scripts.t2p.settings as settings
 
 
 class Database:
-    def __init__(self, database_path: str, re_filename: re.Pattern[str]):
+    def __init__(self, database_path: str, re_filename: re.Pattern):
         self.read_files(database_path, re_filename)       
     
 
-    def read_files(self, database_path: str, re_filename: re.Pattern[str]):
+    def read_files(self, database_path: str, re_filename: re.Pattern):
         self.clear()
         self.database_path = database_path
         fn, _ = os.path.splitext(os.path.basename(database_path))
@@ -77,12 +77,12 @@ class Database:
 
 
 class DatabaseLoader:
-    def __init__(self, path: str, re_filename: re.Pattern[str]):
+    def __init__(self, path: str, re_filename: re.Pattern):
         self.datas: Dict[str, Database] = dict()
         self.preload(path, re_filename)
     
 
-    def preload(self, path: str, re_filename: re.Pattern[str]):
+    def preload(self, path: str, re_filename: re.Pattern):
         dirs = os.listdir(path)
         for d in dirs:
             filepath = os.path.join(path, d)
